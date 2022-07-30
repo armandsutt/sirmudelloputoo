@@ -1,0 +1,392 @@
+---
+title: "sirgrupid2"
+author: "Armand Sutt"
+date: "8 5 2022"
+output: 
+  pdf_document: 
+    keep_tex: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+
+nakatunude_arv <- function(svg,xvg,xdvg,rvg,ck,gnr,alfa,rho){
+  probinfgnr <- rep(NA,times=length(svg))
+  probinfj <- 1
+  for(j in 1:length(svg)){
+    probinfgnr[j] <- alfa[,gnr][j]*rho[,gnr][j]*xdvg[j]*(1/(sum(c(svg[j],xvg[j],xdvg[j],rvg[j]))))
+    probinfj <- probinfj*((1-alfa[,j][gnr]*rho[,j][gnr]*(1/(sum(c(svg[gnr],xvg[gnr],xdvg[gnr],rvg[gnr])))))^(ck[j]*xdvg[j]))
+  }
+  p1 <- (1-sum(probinfgnr))**ck[gnr]
+  PrB <- 1-probinfj
+  PrA <- 1-p1
+  PrInf <- min(c(PrA+PrB-PrA*PrB,1))
+  return(round(rbinom(1,svg[gnr],PrInf)))
+}
+
+nakatunude_arv2 <- function(svg,xvg,xdvg,rvg,ck,gnr,alfa,rho){
+  PrA <- 0
+  PrB <- 0
+  for(j in 1:length(svg)){
+    PrA = PrA + ck[gnr]*alfa[,gnr][j]*xdvg[j]*rho[,gnr][j]*1/(sum(c(svg[j],xvg[j],xdvg[j],rvg[j])))
+    PrB = PrB + ck[j]*alfa[,j][gnr]*xdvg[gnr]*rho[,j][gnr]*1/(sum(c(svg[gnr],xvg[gnr],xdvg[gnr],rvg[gnr])))
+  }
+  PrInf <- min(c(PrA+PrB,1))
+  return(rbinom(1,svg[gnr],PrInf))
+}
+
+
+vg1<-13312
+vg2<-56222
+vg3<-71352
+vg4<-76913
+vg5<-66578
+vg6<-62027
+vg7<-72479
+vg8<-100253
+vg9<-98782
+vg10=92290
+vg11=91346
+vg12=87998
+vg13=83564
+vg14=86534
+vg15=79065
+vg16=68117
+vg17=44781
+vg18=36372
+xvg1<-0
+xvg2<-0
+xvg3<-0
+xvg4<-0
+xvg5<-0
+xvg6<-0
+xvg7<-10
+xvg8<-10
+xvg9<-10
+xvg10<-0
+xvg11<-0
+xvg12<-0
+xvg13<-0
+xvg14<-0
+xvg15<-0
+xvg16<-0
+xvg17<-0
+xvg18=0
+svg1<-vg1-xvg1
+svg2<-vg2-xvg2
+svg3<-vg3-xvg3
+svg4<-vg4-xvg4
+svg5<-vg5-xvg5
+svg6<-vg6-xvg6
+svg7<-vg7-xvg7
+svg8<-vg8-xvg8
+svg9<-vg9-xvg9
+svg10<-vg10-xvg10
+svg11<-vg11-xvg11
+svg12<-vg12-xvg12
+svg13<-vg13-xvg13
+svg14<-vg14-xvg14
+svg15<-vg15-xvg15
+svg16<-vg16-xvg16
+svg17<-vg17-xvg17
+svg18=vg18-xvg18
+xdvg1<-0
+xdvg2<-0
+xdvg3<-0
+xdvg4<-0
+xdvg5<-0
+xdvg6<-0
+xdvg7<-0
+xdvg8<-0
+xdvg9<-0
+xdvg10<-0
+xdvg11<-0
+xdvg12<-0
+xdvg13<-0
+xdvg14<-0
+xdvg15<-0
+xdvg16<-0
+xdvg17<-0
+xdvg18=0
+rvg1<-0
+rvg2<-0
+rvg3<-0
+rvg4<-0
+rvg5<-0
+rvg6<-0
+rvg7<-10
+rvg8<-10
+rvg9<-10
+rvg10<-0
+rvg11<-0
+rvg12<-0
+rvg13<-0
+rvg14<-0
+rvg15<-0
+rvg16<-0
+rvg17<-0
+rvg18=0
+päev = 0
+indeks = 0
+#for(i in 1:18){
+#  for(j in 1:18){
+#    alfa[i,j]=dnorm(j,mean=i,sd=3.5)
+#    }
+#}
+#alfa <- matrix(sample(1:10,18*18,replace=T),nrow=18)
+
+# for(i in 1:18){
+#   alfa[i,]=sample(1:1000,18)
+# }
+
+alfa = matrix(rep(seq(1,by=5,length.out=18,),18),nrow=18,byrow=T)
+
+#rho <- matrix(runif(18*18),nrow=18)
+
+# for(i in 1:18){
+#   rho[i,]=abs(runif(18,min=0,max=i/18)-runif(18,min=0,max=(i-0.5)/18))
+# }
+
+rho = matrix(rep(1,18*18),nrow=18)
+
+ck = c(1,2,25,3,45,5,5,6,75,8,7,6,5,45,3,2,25,2)
+päev=0
+df2 <- data.frame(päev,svg1,svg2,svg3,svg4,svg5,svg6,svg7,svg8,svg9,svg10,svg11,
+                  svg12,svg13,svg14,svg15,svg16,svg17,svg18,
+                  xvg1,xvg2,xvg3,xvg4,xvg5,xvg6,xvg7,xvg8,xvg9,
+                  xvg10,xvg11,xvg12,xvg13,xvg14,xvg15,xvg16,xvg17,xvg18,
+                  xdvg1,xdvg2,xdvg3,xdvg4,xdvg5,xdvg6,xdvg7,xdvg8,xdvg9,
+                  xdvg10,xdvg11,xdvg12,xdvg13,xdvg14,xdvg15,xdvg16,xdvg17,xdvg18,
+                  rvg1,rvg2,rvg3,rvg4,rvg5,rvg6,rvg7,rvg8,rvg9,rvg10,
+                  rvg11,rvg12,rvg13,rvg14,rvg15,rvg16,rvg17,rvg18,indeks)
+df2 <- df2[-1,]
+
+for(i in 1:1000){
+# #rho = c(0.02,0.1,0.2)
+  ti=1
+  vg1<-13312
+  vg2<-56222
+  vg3<-71352
+  vg4<-76913
+  vg5<-66578
+  vg6<-62027
+  vg7<-72479
+  vg8<-100253
+  vg9<-98782
+  vg10=92290
+  vg11=91346
+  vg12=87998
+  vg13=83564
+  vg14=86534
+  vg15=79065
+  vg16=68117
+  vg17=44781
+  vg18=36372
+  xvg1<-0
+  xvg2<-0
+  xvg3<-0
+  xvg4<-0
+  xvg5<-0
+  xvg6<-0
+  xvg7<-10
+  xvg8<-10
+  xvg9<-10
+  xvg10<-0
+  xvg11<-0
+  xvg12<-0
+  xvg13<-0
+  xvg14<-0
+  xvg15<-0
+  xvg16<-0
+  xvg17<-0
+  xvg18=0
+  svg1<-vg1-xvg1
+  svg2<-vg2-xvg2
+  svg3<-vg3-xvg3
+  svg4<-vg4-xvg4
+  svg5<-vg5-xvg5
+  svg6<-vg6-xvg6
+  svg7<-vg7-xvg7
+  svg8<-vg8-xvg8
+  svg9<-vg9-xvg9
+  svg10<-vg10-xvg10
+  svg11<-vg11-xvg11
+  svg12<-vg12-xvg12
+  svg13<-vg13-xvg13
+  svg14<-vg14-xvg14
+  svg15<-vg15-xvg15
+  svg16<-vg16-xvg16
+  svg17<-vg17-xvg17
+  svg18=vg18-xvg18
+  xdvg1<-0
+  xdvg2<-0
+  xdvg3<-0
+  xdvg4<-0
+  xdvg5<-0
+  xdvg6<-0
+  xdvg7<-0
+  xdvg8<-0
+  xdvg9<-0
+  xdvg10<-0
+  xdvg11<-0
+  xdvg12<-0
+  xdvg13<-0
+  xdvg14<-0
+  xdvg15<-0
+  xdvg16<-0
+  xdvg17<-0
+  xdvg18=0
+  rvg1<-0
+  rvg2<-0
+  rvg3<-0
+  rvg4<-0
+  rvg5<-0
+  rvg6<-0
+  rvg7<-10
+  rvg8<-10
+  rvg9<-10
+  rvg10<-0
+  rvg11<-0
+  rvg12<-0
+  rvg13<-0
+  rvg14<-0
+  rvg15<-0
+  rvg16<-0
+  rvg17<-0
+  rvg18=0
+  #c=2
+  Tx1 = 5
+  Tx2 = 3
+  #rho=0.3
+
+  number_added = 0
+  number_taken = 0
+  world <- c(svg1,svg2,svg3,svg4,svg5,svg6,svg7,svg8,svg9,svg10,svg11,svg12,
+             svg13,svg14,svg15,svg16,svg17,svg18,
+              xvg1,xvg2,xvg3,xvg4,xvg5,xvg6,xvg7,xvg8,xvg9,xvg10,xvg11,xvg12,
+             xvg13,xvg14,xvg15,xvg16,xvg17,xvg18,
+              xdvg1,xdvg2,xdvg3,xdvg4,xdvg5,xdvg6,xdvg7,xdvg8,xdvg9,xdvg10,
+             xdvg11,xdvg12,xdvg13,xdvg14,xdvg15,xdvg16,xdvg17,xdvg18,
+              rvg1,rvg2,rvg3,rvg4,rvg5,rvg6,rvg7,rvg8,rvg9,rvg10,rvg11,
+             rvg12,rvg13,rvg14,rvg15,rvg16,rvg17,rvg18)
+  n=sum(world)
+  indeks = i
+  päev=0
+  plum = T
+  how_set<-data.frame(xvg1,xvg2,xvg3,xvg4,xvg5,xvg6,xvg7,xvg8,xvg9,xvg10,xvg11,xvg12,
+             xvg13,xvg14,xvg15,xvg16,xvg17,xvg18)
+  päev = 0
+  väärtused <- c(päev,svg1,svg2,svg3,svg4,svg5,svg6,svg7,svg8,svg9,svg10,svg11,svg12,
+             svg13,svg14,svg15,svg16,svg17,svg18,
+              xvg1,xvg2,xvg3,xvg4,xvg5,xvg6,xvg7,xvg8,xvg9,xvg10,xvg11,xvg12,
+             xvg13,xvg14,xvg15,xvg16,xvg17,xvg18,
+              xdvg1,xdvg2,xdvg3,xdvg4,xdvg5,xdvg6,xdvg7,xdvg8,xdvg9,xdvg10,
+             xdvg11,xdvg12,xdvg13,xdvg14,xdvg15,xdvg16,xdvg17,xdvg18,
+              rvg1,rvg2,rvg3,rvg4,rvg5,rvg6,rvg7,rvg8,rvg9,rvg10,rvg11,
+             rvg12,rvg13,rvg14,rvg15,rvg16,rvg17,rvg18,indeks)
+  df2[nrow(df2)+1,]=väärtused
+  print(i)
+  while(plum){
+    svg <- as.numeric(world[1:18])
+    xvg <- as.numeric(world[19:36])
+    xdvg <- as.numeric(world[37:54])
+    rvg <- as.numeric(world[55:72])
+    how_many_added <- rep(NA,length(svg))
+    for(j in 1:length(svg)){
+      how_many_added[j]=ifelse(nakatunude_arv(svg,xvg,xdvg,rvg,ck,j,alfa,rho)<svg[j],nakatunude_arv(svg,xvg,xdvg,rvg,ck,j,alfa,rho),svg[j])
+    }
+    päev=päev + 1
+    how_set[nrow(how_set)+1,] <- how_many_added
+    if(sum(c(world[1:18],world[55:72]))==n){
+      plum = F
+      #print(paste("päev",päev))
+      #print(c("S ", "X ", "R "))
+      #print(world)
+    }
+    else{
+      #print(paste("päev",päev))
+      #print(c("S ", "X ", "R "))
+      #print(world)
+      world[19:36] = world[19:36]+how_many_added
+      world[1:18] = world[1:18]-how_many_added
+      if((Tx1-Tx2)<ti){
+        #number_taken <- how_set[ti-Tx2+1,]
+        world[19:36] = world[19:36]-as.numeric(how_set[ti-(Tx1-Tx2),])
+        world[37:54] = world[37:54]+as.numeric(how_set[ti-(Tx1-Tx2),])
+        if(Tx1<ti){
+          world[37:54] = world[37:54]-as.numeric(how_set[ti-Tx1,])
+          world[55:72] = world[55:72]+as.numeric(how_set[ti-Tx1,])
+        }
+      }
+      ti = ti + 1
+      #number_added <- how_many_added
+      väärtused <- c(päev,world,indeks)
+      df2[nrow(df2)+1,]=väärtused
+    }
+  }
+}
+
+```
+
+```{r,echo=F,results = F}
+
+df2$xvg1. = df2$xvg1+df2$xdvg1
+df2$xvg2. = df2$xvg2+df2$xdvg2
+df2$xvg3. = df2$xvg3+df2$xdvg3
+df2$xvg4. = df2$xvg4+df2$xdvg4
+df2$xvg5. = df2$xvg5+df2$xdvg5
+df2$xvg6. = df2$xvg6+df2$xdvg6
+df2$xvg7. = df2$xvg7+df2$xdvg7
+df2$xvg8. = df2$xvg8+df2$xdvg8
+df2$xvg9. = df2$xvg9+df2$xdvg9
+df2$xvg10. = df2$xvg10+df2$xdvg10
+df2$xvg11. = df2$xvg11+df2$xdvg11
+df2$xvg12. = df2$xvg12+df2$xdvg12
+df2$xvg13. = df2$xvg13+df2$xdvg13
+df2$xvg14. = df2$xvg14+df2$xdvg14
+df2$xvg15. = df2$xvg15+df2$xdvg15
+df2$xvg16. = df2$xvg16+df2$xdvg16
+df2$xvg17. = df2$xvg17+df2$xdvg17
+df2$xvg18. = df2$xvg18+df2$xdvg18
+
+df2$xvg <- NA
+
+for(i in 1:nrow(df2)){
+  df2$xvg[i]<-sum(df2[i,75:92])
+  print(i)
+}
+
+library("ggplot2")
+
+library("reshape2")
+
+#a <- with(df, tapply(value,päev,mean))
+
+df <- melt(df2[,1:19], id.vars = 'päev', variable.name = 'grupid')
+
+dfsvg <- aggregate(value ~ grupid + päev, data = df, FUN= "mean" )
+
+ggplot(dfsvg, aes(päev, value))+
+  geom_line(aes(color=grupid))
+
+df <- melt(df2[,c(1,75:92)],id.vars = 'päev', variable.name = 'grupid')
+
+dfxvg <- aggregate(value ~ grupid + päev, data = df, FUN= "mean" )
+
+ggplot(dfxvg, aes(päev, value))+
+  geom_line(aes(color=grupid))
+
+df <- melt(df2[,c(1,56:73)],id.vars = 'päev', variable.name = 'grupid')
+
+dfrvg <- aggregate(value ~ grupid + päev, data = df, FUN= "mean" )
+
+ggplot(dfrvg, aes(päev, value))+
+  geom_line(aes(color=grupid))
+
+
+
+
+```
